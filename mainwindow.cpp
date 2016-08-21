@@ -1,7 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-<<<<<<< HEAD
-=======
 #include <qaction.h>
 #include <qdebug.h>
 #include <qkeysequence.h>
@@ -26,15 +24,12 @@ FILE * bodyfile;
 CURL *curl_handle;
 
 using namespace std;
->>>>>>> 757405f74b555d7edf5869bcd8120b86bdac4680
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-<<<<<<< HEAD
-=======
     setWindowTitle(tr("Translate"));
     setToolTip(tr("Translate"));
     setWindowIconText(tr("Translate"));
@@ -48,15 +43,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->pushButton->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
     connect(ui->pushButton,SIGNAL(clicked(bool)),this,SLOT(TranslateSlot()));
->>>>>>> 757405f74b555d7edf5869bcd8120b86bdac4680
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-<<<<<<< HEAD
-=======
 
 struct stStu
 {
@@ -169,5 +161,3 @@ void MainWindow::replyFinished(QNetworkReply *reply)
 
     ui->textEdit->setText(result);
 }
-
->>>>>>> 757405f74b555d7edf5869bcd8120b86bdac4680
