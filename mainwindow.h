@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QNetworkRequest>
+#include <qnetworkreply.h>
+#include <QKeyEvent>
 
 namespace Ui {
 class MainWindow;
@@ -15,11 +18,17 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+protected:
+    void keyPressEvent(QKeyEvent *event);
+
 public slots:
     void TranslateSlot();
+    void replyFinished(QNetworkReply * reply);
 
 private:
     Ui::MainWindow *ui;
+    QNetworkReply *m_reply;
+    QNetworkRequest m_request;
 };
 
 #endif // MAINWINDOW_H
