@@ -1,1 +1,10 @@
+<<<<<<< HEAD
 <RCC/>
+=======
+<RCC>
+    <qresource prefix="/Image">
+        <file>logo.jpg</file>
+        <file>logo.ico</file>
+    </qresource>
+</RCC>
+>>>>>>> 757405f74b555d7edf5869bcd8120b86bdac4680
