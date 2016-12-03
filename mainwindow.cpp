@@ -8,10 +8,6 @@
 #include <qnetworkaccessmanager.h>
 #include <qurl.h>
 
-#include <curl/curl.h>
-#include <curl/multi.h>
-#include <curl/easy.h>
-
 #ifndef WIN32
 #  include <unistd.h>
 #endif
@@ -20,11 +16,15 @@
 #include <assert.h>
 #include <string>
 
-FILE * headerfile;
-FILE * bodyfile;
-CURL *curl_handle;
-
 using namespace std;
+
+//curl
+#include <curl/curl.h>
+#include <curl/multi.h>
+#include <curl/easy.h>
+
+//jsoncpp
+#include <json/json.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -36,9 +36,6 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowIconText(tr("Translate"));
     setWindowIcon(QIcon(":/Image/logo.jpg"));
 
-    curl_global_init(CURL_GLOBAL_ALL);
-    curl_handle = curl_easy_init();
-
     ui->pushButton->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
     connect(ui->pushButton,SIGNAL(clicked(bool)),this,SLOT(TranslateSlot()));
 }
@@ -47,13 +44,6 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-struct stStu
-{
-    int no;
-    string name;
-    string address;
-};
 
 size_t print_data(void*ptr,size_t size,size_t nmemb,void*stream)
 {
@@ -78,9 +68,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     }
 }
 
-#define HEAD_OUT "/home/lin/Documents/head.out"
-#define BODY_OUT "/home/lin/Documents/body.out"
-
 void MainWindow::TranslateSlot()
 {
     QString doctype = "json";
@@ -91,34 +78,40 @@ void MainWindow::TranslateSlot()
     QUrl url(urlstr);
     QNetworkAccessManager *accessManager = new QNetworkAccessManager(this);
     m_request.setUrl(url);
+    m_request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json;charset:utf-8");
     m_reply = accessManager->get(m_request);
+
     connect(accessManager,SIGNAL(finished(QNetworkReply*)),this,SLOT(replyFinished(QNetworkReply*)));
 }
 
+//注意QString::fromUtf8的使用
 void MainWindow::replyFinished(QNetworkReply *reply)
 {
-    QString result;
-    QVariant status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-    const QByteArray bytes = reply->readAll();
+    QByteArray bytes = reply->readAll();
 
-    QVariantMap varMap;
-    if (varMap.empty()) {
+    qDebug()<<QString::fromUtf8(bytes.data());
+
+    Json::Reader reader;
+    Json::Value root;
+    const char * str = bytes.data();
+    if (!reader.parse(str,root)) {
         return;
     }
 
-    {
-        QVariant basicVar = varMap["basic"];
-        QVariantMap basicMap = basicVar.toMap();
+    Json::Value basicarray = root["basic"];
+    Json::Value explains = basicarray["explains"];
 
-        QVariant explainVar = basicMap["explains"];
-        QVariantList explainList = explainVar.toList();
+    QString result;
+    result = result + "[basic explains]:\n";
 
-        result = result + "[basic explains]:\n";
+    //如果没有解释,则直接返回
+    if (!explains.isArray() || explains.size() < 0) {
+        return;
+    }
 
-        foreach (const QVariant & item, explainList) {
-            QString itemStr = item.toString();
-            result = result + itemStr + "\n";
-        }
+    for (int i = 0;i < explains.size();i++) {
+        QString itemStr = QString::fromUtf8(explains[i].asString().c_str());
+        result = result + itemStr + "\n";
     }
 
     ui->textEdit->setText(result);
