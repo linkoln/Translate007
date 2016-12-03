@@ -1,2 +1,2 @@
 # Translate007
-linux 中英翻译软件
+中英翻译软件
