@@ -19,6 +19,16 @@ HEADERS  += mainwindow.h
 
 FORMS    += mainwindow.ui
 
-LIBS += -L"/usr/local/lib" -lcurl
+RESOURCES += resources.qrc
 
-RESOURCES +=
+unix{
+    LIBS += -L"/usr/local/lib" -lcurl
+}
+
+win32{
+    INCLUDEPATH += "E:\\LinLianQin\\lib\\Librarys\\curl_7_50_0\\include"
+    INCLUDEPATH += "E:\\LinLianQin\\lib\\Librarys\\jsoncpp\\include"
+
+    LIBS += -L"E:\\LinLianQin\\lib\\Librarys\\curl_7_50_0\\lib" -llibcurl
+    LIBS += -L"E:\\LinLianQin\\lib\\Librarys\\jsoncpp\\lib" -ljsoncpp
+}

@@ -1,0 +1,8 @@
+/debug
+/release
+*.pdb
+Makefile
+Makefile.Debug
+Makefile.Release
+.user
+Translate007.pro.user.*
